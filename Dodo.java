@@ -1,219 +1,214 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 
-/**
- * The class Dodo.
- * 
- * @author Sjaak Smetsers & Renske Smetsers-Weeda
- * @version 3.0 -- 01-01-2017
- */
-public abstract class Dodo extends Actor
-{
-    public static final int NORTH   = 0;
-    public static final int EAST    = 1;
-    public static final int SOUTH   = 2;
-    public static final int WEST    = 3;
+import java.util.Optional;
 
-    private int myDirection;
+public abstract class Dodo extends Actor {
 
-    private GreenfootImage imageRight, imageLeft;
-    
-    protected Dodo ( int init_direction ) {
-        this.myDirection = modulo( init_direction, 4);
-        imageRight  = getImage();
-        imageLeft = new GreenfootImage( imageRight );
+    private Direction direction;
+
+    private final GreenfootImage imageRight, imageLeft;
+
+    protected Dodo(Direction direction) {
+
+        this.direction = direction;
+        imageRight = getImage();
+        imageLeft = new GreenfootImage(imageRight);
         imageLeft.mirrorHorizontally();
-        setImage ();
+        setImage();
 
     }
-    
-    private void setImage (){
-        if ( myDirection == NORTH ) {
-            setImage( imageLeft );
-            setRotation( 90 );
-        } else if ( myDirection == EAST ) {
-            setImage( imageRight );
-            setRotation( 0 );
-        } else if ( myDirection == SOUTH ) {
-            setImage( imageRight );
-            setRotation( 90 );
-        } else if ( myDirection == WEST ) {
-            setImage( imageLeft );
-            setRotation( 0 );
-        } 
+
+    private void setImage() {
+        if (direction == Direction.NORTH) {
+            setImage(imageLeft);
+            setRotation(90);
+        } else if (direction == Direction.EAST) {
+            setImage(imageRight);
+            setRotation(0);
+        } else if (direction == Direction.SOUTH) {
+            setImage(imageRight);
+            setRotation(90);
+        } else if (direction == Direction.WEST) {
+            setImage(imageLeft);
+            setRotation(0);
+        }
     }
-    
-    
+
+
     public boolean fenceAhead() {
-        return getActorAhead( Fence.class ) != null;
+        return getActorAhead(Fence.class) != null;
     }
 
     public boolean eggAhead() {
-        return getActorAhead( Egg.class ) != null;
+        return getActorAhead(Egg.class) != null;
     }
-    
+
     public boolean nestAhead() {
-        return getActorAhead( Nest.class ) != null;
+        return getActorAhead(Nest.class) != null;
     }
 
     public boolean onEgg() {
-        return getActor( Egg.class ) != null;
+        return getActor(Egg.class) != null;
     }
 
     public boolean onNest() {
-        return getActor( Nest.class ) != null;
+        return getActor(Nest.class) != null;
     }
 
     public boolean onGrain() {
-        return getActor( Grain.class ) != null;
+        return getActor(Grain.class) != null;
     }
 
     public void layEgg() {
-        getWorld().addObject( new BlueEgg (), getX (), getY () );
+        getWorld().addObject(new BlueEgg(), getX(), getY());
     }
-    
+
     public Egg getEgg() {
-        return getActor( Egg.class );
+        return getActor(Egg.class);
     }
 
     public Egg pickUpEgg() {
         Egg maybeEgg = getEgg();
-        if ( maybeEgg == null ){
-            showError( "There is no egg in this cell" );
+        if (maybeEgg == null) {
+            showError("There is no egg in this cell");
             Greenfoot.stop();
         } else {
-            removeActor( maybeEgg );
+            removeActor(maybeEgg);
         }
         return maybeEgg;
     }
 
     public Grain pickUpGrain() {
-        Grain maybeGrain = getActor( Grain.class );
-        if ( maybeGrain == null ){
-            showError( "There is no grain in this cell" );
+        Grain maybeGrain = getActor(Grain.class);
+        if (maybeGrain == null) {
+            showError("There is no grain in this cell");
             Greenfoot.stop();
         } else {
-            removeActor( maybeGrain );
+            removeActor(maybeGrain);
         }
         return maybeGrain;
     }
 
-    private void removeActor( Actor actor ) {
-        getWorld().removeObject( actor );
+    private void removeActor(Actor actor) {
+        getWorld().removeObject(actor);
     }
 
     public boolean dodoAhead() {
-        return getActorAhead( Dodo.class ) != null;
+        return getActorAhead(Dodo.class) != null;
     }
 
-    public void setDirection( int new_direction ){
-        new_direction = modulo( new_direction, 4 );
-        if ( this.myDirection != new_direction ) {
-            this.myDirection = new_direction;
+    public void setDirection(Direction direction) {
+        if (this.direction != direction) {
+            this.direction = direction;
             setImage();
-            if ( Mauritius.traceIsOn() ) {
+            if (Mauritius.traceIsOn()) {
                 Greenfoot.delay(1);
             }
         }
     }
 
     public int randomDirection() {
-        return Greenfoot.getRandomNumber( 4 );
+        return Greenfoot.getRandomNumber(4);
     }
-    
-    private int modulo( int a, int b ) {
+
+    private int modulo(int a, int b) {
         return (a % b + b) % b;
     }
 
-    public int getDirection(){
-        return myDirection;
+    public Direction getDirection() {
+        return direction;
     }
 
-    public int getX(){
+    public int getX() {
         return super.getX();
     }
 
-    public int getY(){
+    public int getY() {
         return super.getY();
     }
 
-    private <E extends Actor> E getActorAhead(Class<E> cls){
-        if ( myDirection == NORTH ) {
-            return (E) getOneObjectAtOffset(0,-1, cls);
-        } else if ( myDirection == EAST ) {
+    private <E extends Actor> E getActorAhead(Class<E> cls) {
+        if (direction == Direction.NORTH) {
+            return (E) getOneObjectAtOffset(0, -1, cls);
+        } else if (direction == Direction.EAST) {
             return (E) getOneObjectAtOffset(1, 0, cls);
-        } else if ( myDirection == SOUTH ) {
+        } else if (direction == Direction.SOUTH) {
             return (E) getOneObjectAtOffset(0, 1, cls);
-        } else if ( myDirection == WEST ) {
-            return (E) getOneObjectAtOffset(-1,0, cls);
+        } else if (direction == Direction.WEST) {
+            return (E) getOneObjectAtOffset(-1, 0, cls);
         } else {
             return null;
         }
     }
 
-    private <E extends Actor> E getActor(Class<E> cls){
+    private <E extends Actor> E getActor(Class<E> cls) {
         return (E) getOneObjectAtOffset(0, 0, cls);
     }
 
 
     public void step() {
-        if ( myDirection == NORTH ) {
-            setLocation( getX(), getY() - 1 );
-        } else if ( myDirection == EAST ) {
-            setLocation(getX() + 1, getY() );
-        } else if ( myDirection == SOUTH ) {
-            setLocation( getX(), getY() + 1 );
-        } else if ( myDirection == WEST ) {
-            setLocation( getX() - 1, getY() );
+        if (direction == Direction.NORTH) {
+            setLocation(getX(), getY() - 1);
+        } else if (direction == Direction.EAST) {
+            setLocation(getX() + 1, getY());
+        } else if (direction == Direction.SOUTH) {
+            setLocation(getX(), getY() + 1);
+        } else if (direction == Direction.WEST) {
+            setLocation(getX() - 1, getY());
         }
-        if ( Mauritius.traceIsOn() ) {
+        if (Mauritius.traceIsOn()) {
             Greenfoot.delay(1);
         }
     }
 
-        
+
     /**
      * Test is we are facing the border.
      */
-    public boolean borderAhead () {
-        if ( myDirection == NORTH ) {
+    public boolean borderAhead() {
+        if (direction == Direction.NORTH) {
             return getY() == 0;
-        } else if ( myDirection == EAST ) {
-            return getX() == getWorld().getWidth()  - 1;
-        } else if ( myDirection == SOUTH ) {
+        } else if (direction == Direction.EAST) {
+            return getX() == getWorld().getWidth() - 1;
+        } else if (direction == Direction.SOUTH) {
             return getY() == getWorld().getHeight() - 1;
         } else { // if ( myDirection == WEST ) {
             return getX() == 0;
         }
     }
 
-    public boolean facingNorth () {
-        return getDirection() == NORTH;
+    public boolean facingNorth() {
+        return getDirection() == Direction.NORTH;
     }
-    
-    /**
-     * Turns towards the left.
-     */
+
     public void turnLeft() {
-        setDirection( modulo( myDirection-1, 4 ) );
+
+        Optional<Direction> direction = Direction.valueOf(modulo(this.direction.ordinal() - 1, 4));
+
+        if (direction.isEmpty()) throw new IllegalArgumentException("Invalid direction");
+
+        setDirection(direction.get());
     }
 
-    /**
-     * Turns towards the right.
-     */
     public void turnRight() {
-        setDirection( modulo( myDirection+1, 4 ) );
+
+        Optional<Direction> direction = Direction.valueOf(modulo(this.direction.ordinal() + 1, 4));
+
+        if (direction.isEmpty()) throw new IllegalArgumentException("Invalid direction");
+
+        setDirection(direction.get());
     }
 
-    public void updateScores( int score1, int score2 ) {
-        ((Mauritius) getWorld()).updateScore( score1, score2 );
-    }
-    
-    protected void showError ( String err_msg ) {
-        Message.showMessage(  new Alert( err_msg ), getWorld() );
+    public void updateScores(int score1, int score2) {
+        ((Mauritius) getWorld()).updateScore(score1, score2);
     }
 
-    protected void showCompliment ( String compl_msg ) {
-        Message.showMessage(  new Compliment ( compl_msg ), getWorld() );
+    protected void showError(String err_msg) {
+        Message.showMessage(new Alert(err_msg), getWorld());
+    }
+
+    protected void showCompliment(String compl_msg) {
+        Message.showMessage(new Compliment(compl_msg), getWorld());
     }
 
 }

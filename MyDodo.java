@@ -5,7 +5,7 @@ public class MyDodo extends Dodo {
     private int numOfSteps;
 
     public MyDodo() {
-        super(EAST);
+        super(Direction.EAST);
         numOfSteps = 0;
     }
 
@@ -14,7 +14,7 @@ public class MyDodo extends Dodo {
             step();
             numOfSteps++;
         } else {
-            showError("I'm stuck!");
+            throw new IllegalStateException("I AM STUCK HELP");
         }
     }
 
@@ -22,6 +22,10 @@ public class MyDodo extends Dodo {
         for (int i = 0; i < distance; i++) {
             move();
         }
+    }
+
+    public void move(PathNode node) {
+
     }
 
     private boolean canMove() {
@@ -37,3 +41,4 @@ public class MyDodo extends Dodo {
         turnRight();
     }
 }
+
