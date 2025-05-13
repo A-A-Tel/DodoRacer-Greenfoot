@@ -1,16 +1,14 @@
-import greenfoot.Actor;
 import greenfoot.World;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class PathNode {
-    public int x, y;
+    public Direction direction;
     public PathNode next;
 
-    PathNode(int x, int y, PathNode next) {
-        this.x = x;
-        this.y = y;
+    public PathNode(Direction direction, PathNode next) {
+        this.direction = direction;
         this.next = next;
     }
 
@@ -18,46 +16,85 @@ public class PathNode {
         int width = world.getWidth();
         int height = world.getHeight();
 
-        boolean[][] visited = new boolean[height][width];
+        final boolean[][] visited = new boolean[height][width];
 
-        for (Actor fenceObj : world.getObjects(Fence.class)) {
-            visited[fenceObj.getY()][fenceObj.getX()] = true;
+        for (Fence wall : world.getObjects(Fence.class)) {
+
+            visited[wall.getX()][wall.getY()] = true;
         }
 
-        Queue<PathNode> queue = new LinkedList<>();
-        queue.add(new PathNode(x1, y1, null));
-        visited[y1][x1] = true;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[]{x1, y1});
+        visited[x1][y1] = true;
 
-        int[][] directions = {{0, -1}, // up
-                {0, 1},  // down
-                {-1, 0}, // left
-                {1, 0}   // right
-        };
+        int[][] cameFrom = new int[height][width];
+        Direction[][] directionFrom = new Direction[height][width];
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                cameFrom[y][x] = -1;
+            }
+        }
 
         while (!queue.isEmpty()) {
-            PathNode current = queue.poll();
+            int[] current = queue.poll();
+            int x = current[0];
+            int y = current[1];
 
-            if (current.x == x2 && current.y == y2) {
-                // Rebuild path from goal to start by reversing `next` pointers
-                PathNode result = null;
-                while (current != null) {
-                    result = new PathNode(current.x, current.y, result);
-                    current = current.next;
-                }
-                return result;
+            if (x == x2 && y == y2) {
+                return reconstructPath(cameFrom, directionFrom, x1, y1, x2, y2, width);
             }
 
-            for (int[] dir : directions) {
-                int nx = current.x + dir[0];
-                int ny = current.y + dir[1];
+            for (Direction dir : Direction.values()) {
+                int[] offset = getOffset(dir);
+                int newX = x + offset[0];
+                int newY = y + offset[1];
 
-                if (nx >= 0 && ny >= 0 && nx < width && ny < height && !visited[ny][nx]) {
-                    visited[ny][nx] = true;
-                    queue.add(new PathNode(nx, ny, current));
+                if (newX >= 0 && newX < width && newY >= 0 && newY < height && !visited[newY][newX]) {
+                    visited[newY][newX] = true;
+
+                    cameFrom[newY][newX] = y * width + x;
+                    directionFrom[newY][newX] = dir;
+
+                    queue.add(new int[]{newX, newY});
                 }
             }
         }
 
-        return null; // No path found
+        return null;
+    }
+
+    private static int[] getOffset(Direction dir) {
+        return switch (dir) {
+            case NORTH -> new int[]{0, -1};
+            case EAST -> new int[]{1, 0};
+            case SOUTH -> new int[]{0, 1};
+            case WEST -> new int[]{-1, 0};
+        };
+    }
+
+    private static PathNode reconstructPath(int[][] cameFrom, Direction[][] directionFrom,
+                                            int x1, int y1, int x2, int y2, int width) {
+        int currentX = x2;
+        int currentY = y2;
+
+        PathNode head = null;
+
+        while (currentX != x1 || currentY != y1) {
+            int prevIndex = cameFrom[currentY][currentX];
+            Direction dir = directionFrom[currentY][currentX];
+
+            if (prevIndex == -1) break;
+
+            int prevY = prevIndex / width;
+            int prevX = prevIndex % width;
+
+            head = new PathNode(dir, head);
+
+            currentX = prevX;
+            currentY = prevY;
+        }
+
+        return head;
     }
 }

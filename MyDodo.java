@@ -1,3 +1,6 @@
+import greenfoot.Actor;
+import greenfoot.World;
+
 import java.util.List;
 
 public class MyDodo extends Dodo {
@@ -26,10 +29,32 @@ public class MyDodo extends Dodo {
 
     public void move(PathNode node) {
 
+        while (node != null) {
+            move(node.direction);
+            node = node.next;
+        }
+
+    }
+
+    public void move(Direction direction) {
+        setDirection(direction);
+        move();
     }
 
     private boolean canMove() {
         return !borderAhead() && !fenceAhead();
+    }
+
+    public void collectEggs() {
+
+        World world = getWorld();
+
+        for (Actor egg : world.getObjects(Egg.class)) {
+            PathNode path = PathNode.findPath(getX(), getY(), egg.getX(), egg.getY(), world);
+            move(path);
+//            pickUpEgg();
+        }
+        setDirection(Direction.EAST);
     }
 
     private List<Egg> getEggs() {
