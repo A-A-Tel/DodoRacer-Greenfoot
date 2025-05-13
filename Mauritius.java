@@ -149,33 +149,22 @@ public class Mauritius extends World {
 
     private char getActorAt(int x, int y) {
         List<Actor> actors = getObjectsAt(x, y, null);
-        if (actors.size() > 0) {
-            Actor actor = actors.get(0);
-            if (actor instanceof MyDodo) {
-                MyDodo dodo = (MyDodo) actor;
-                switch (dodo.getDirection()) {
-                    case Direction.NORTH:
-                        return DODO_N;
-                    case Direction.SOUTH:
-                        return DODO_S;
-                    case Direction.EAST:
-                        return DODO_E;
-                    default:
-                        return DODO_W;
-                }
-            } else if (actor instanceof Fence) {
-                return FENCE;
-            } else if (actor instanceof GoldenEgg) {
-                return EGG_YELLOW;
-            } else if (actor instanceof BlueEgg) {
-                return EGG_BLUE;
-            } else if (actor instanceof Nest) {
-                return NEST;
-            } else if (actor instanceof Grain) {
-                return GRAIN;
-            } else {
-                return ' ';
-            }
+        if (!actors.isEmpty()) {
+            Actor actor = actors.getFirst();
+            return switch (actor) {
+                case MyDodo dodo -> switch (dodo.getDirection()) {
+                    case Direction.NORTH -> DODO_N;
+                    case Direction.SOUTH -> DODO_S;
+                    case Direction.EAST -> DODO_E;
+                    default -> DODO_W;
+                };
+                case Fence fence -> FENCE;
+                case GoldenEgg goldenEgg -> EGG_YELLOW;
+                case BlueEgg blueEgg -> EGG_BLUE;
+                case Nest nest -> NEST;
+                case Grain grain -> GRAIN;
+                case null, default -> ' ';
+            };
         } else {
             return ' ';
         }
