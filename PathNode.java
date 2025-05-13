@@ -1,5 +1,6 @@
 import greenfoot.World;
 
+import java.sql.SQLOutput;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -19,13 +20,12 @@ public class PathNode {
         final boolean[][] visited = new boolean[height][width];
 
         for (Fence wall : world.getObjects(Fence.class)) {
-
-            visited[wall.getX()][wall.getY()] = true;
+            visited[wall.getY()][wall.getX()] = true;
         }
 
         Queue<int[]> queue = new LinkedList<>();
         queue.add(new int[]{x1, y1});
-        visited[x1][y1] = true;
+        visited[y1][x1] = true;
 
         int[][] cameFrom = new int[height][width];
         Direction[][] directionFrom = new Direction[height][width];

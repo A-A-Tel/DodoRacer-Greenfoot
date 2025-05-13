@@ -1,6 +1,7 @@
 import greenfoot.Actor;
 import greenfoot.World;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyDodo extends Dodo {
@@ -49,21 +50,39 @@ public class MyDodo extends Dodo {
 
         World world = getWorld();
 
-        for (Actor egg : world.getObjects(Egg.class)) {
+        while (true) {
+            Egg egg = getNearestEgg(world);
+            if (egg == null) break;
             PathNode path = PathNode.findPath(getX(), getY(), egg.getX(), egg.getY(), world);
             move(path);
-//            pickUpEgg();
+            pickUpEgg();
         }
-        setDirection(Direction.EAST);
-    }
 
-    private List<Egg> getEggs() {
-        return getWorld().getObjects(Egg.class);
+        setDirection(Direction.EAST);
     }
 
     private void turn180() {
         turnRight();
         turnRight();
+    }
+
+    private Egg getNearestEgg(World world) {
+        List<Egg> eggs = world.getObjects(Egg.class);
+
+        Egg nearestEgg = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (Egg egg : eggs) {
+            int dx = getX() - egg.getX();
+            int dy = getY() - egg.getY();
+            double distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestEgg = egg;
+            }
+        }
+        return nearestEgg;
     }
 }
 
