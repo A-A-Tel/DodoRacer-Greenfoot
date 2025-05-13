@@ -100,7 +100,7 @@ public class MyDodo extends Dodo
     
 
     /**
-     * Method for praciticing with lists.
+     * Method for practicing with lists.
      */
     public void practiceWithLists( ){
         List<Integer> listOfNumbers = createListOfNumbers();
