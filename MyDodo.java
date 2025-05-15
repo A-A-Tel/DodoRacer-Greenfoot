@@ -1,30 +1,22 @@
-import greenfoot.Actor;
 import greenfoot.World;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MyDodo extends Dodo {
 
-    private int numOfSteps;
+    public void act() {
+        collectEggs();
+    }
 
     public MyDodo() {
         super(Direction.EAST);
-        numOfSteps = 0;
     }
 
     public void move() {
         if (canMove()) {
             step();
-            numOfSteps++;
         } else {
             throw new IllegalStateException("I AM STUCK HELP");
-        }
-    }
-
-    public void move(int distance) {
-        for (int i = 0; i < distance; i++) {
-            move();
         }
     }
 
@@ -59,11 +51,6 @@ public class MyDodo extends Dodo {
         }
 
         setDirection(Direction.EAST);
-    }
-
-    private void turn180() {
-        turnRight();
-        turnRight();
     }
 
     private Egg getNearestEgg(World world) {
