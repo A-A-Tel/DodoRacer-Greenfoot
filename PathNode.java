@@ -1,6 +1,5 @@
 import greenfoot.World;
 
-import java.sql.SQLOutput;
 import java.util.LinkedList;
 import java.util.Queue;
 

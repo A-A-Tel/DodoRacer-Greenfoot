@@ -70,12 +70,13 @@ public class MyDodo extends Dodo {
         List<Egg> eggs = world.getObjects(Egg.class);
 
         Egg nearestEgg = null;
-        double minDistance = Double.MAX_VALUE;
+        int minDistance = Integer.MAX_VALUE;
 
         for (Egg egg : eggs) {
-            int dx = getX() - egg.getX();
-            int dy = getY() - egg.getY();
-            double distance = Math.sqrt(dx * dx + dy * dy);
+
+            int dx = Math.abs(egg.getX() - getX());
+            int dy = Math.abs(egg.getY() - getY());
+            int distance = dy + dx;
 
             if (distance < minDistance) {
                 minDistance = distance;
