@@ -3,6 +3,15 @@ import greenfoot.World;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Represents a node in a linked list of directions that form a path through the world grid.
+ * <p>
+ * Each {@code PathNode} contains a {@link Direction} indicating the next move to make,
+ * and a reference to the next node in the path. This structure is used to represent
+ * paths found by the {@link #findPath(int, int, int, int, World)} method, typically from
+ * a starting point to a target while avoiding obstacles.
+ * </p>
+ */
 public class PathNode {
     public Direction direction;
     public PathNode next;
@@ -12,6 +21,16 @@ public class PathNode {
         this.next = next;
     }
 
+    /**
+     * Finds the fastest path from A to B avoiding obstacles
+     *
+     * @param x1 The starting X location
+     * @param y1 The starting Y location
+     * @param x2 The desired X location
+     * @param y2 The desired Y location
+     * @param world The world to form the path for
+     * @return {@code PathNode} if there is a possible path; {@code null} if there is no possible path
+     */
     public static PathNode findPath(int x1, int y1, int x2, int y2, World world) {
         int width = world.getWidth();
         int height = world.getHeight();
@@ -63,6 +82,13 @@ public class PathNode {
         return null;
     }
 
+    /**
+     * Returns an integer offset representing the specified direction.
+     * The offset is a two-element array: {@code [x, y]}.
+     *
+     * @param dir the desired direction
+     * @return a two-element array containing the x and y offset for the direction
+     */
     private static int[] getOffset(Direction dir) {
         return switch (dir) {
             case NORTH -> new int[]{0, -1};
@@ -72,6 +98,20 @@ public class PathNode {
         };
     }
 
+    /**
+     * Reconstructs the path from the start position to the target position,
+     * using the provided trace data from {@link #findPath(int, int, int, int, World)}.
+     *
+     * @param cameFrom a 2D array mapping each position to the index of its previous position
+     * @param directionFrom a 2D array mapping each position to the direction taken to reach it
+     * @param x1 the starting x-coordinate
+     * @param y1 the starting y-coordinate
+     * @param x2 the target x-coordinate
+     * @param y2 the target y-coordinate
+     * @param width the width of the world grid (used for index calculations)
+     * @return the head of a linked list representing the path as {@code PathNode}s,
+     *         or {@code null} if no path could be reconstructed
+     */
     private static PathNode reconstructPath(int[][] cameFrom, Direction[][] directionFrom,
                                             int x1, int y1, int x2, int y2, int width) {
         int currentX = x2;
